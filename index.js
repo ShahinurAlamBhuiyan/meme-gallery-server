@@ -38,6 +38,7 @@ client.connect(err => {
   })
 
 
+  // get all memes...
   app.get('/allMemes', (req, res) => {
     memesCollection.find({})
       .toArray((err, documents) => {
@@ -45,11 +46,27 @@ client.connect(err => {
       })
   })
 
+  // delete single meme
   app.delete('/deleteMeme/:id', (req, res) => {
     memesCollection.deleteOne({ _id: ObjectId(req.params.id) })
       .then(result => {
         console.log(result)
       })
+  });
+
+
+  // get last 7 days data...
+  app.get('/recentMemes', (req, res) => {
+    memesCollection.find(
+      { uploadedDate:
+        {$gte: new Date((new Date().getTime() - (7 * 24 * 60 * 60 * 1000))).toISOString()}
+      })
+      .toArray((err, documents) => {
+        res.send(documents);
+        console.log(documents, 'hit bro')
+      })
+
+
   })
 
 });
